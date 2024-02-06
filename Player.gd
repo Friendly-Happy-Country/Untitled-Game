@@ -4,6 +4,17 @@ extends CharacterBody3D
 const SPEED = 5.0
 const JUMP_VELOCITY = 4.5
 
+
+@onready var sensSlider = get_node("../Control/HSlider")
+@onready var sens = sensSlider.value
+# updates sens when changed in menu
+func _sens_value_changed(new_value):
+	sens = new_value
+
+@onready var pauseMenu = get_node("../Control")
+
+
+
 # Get the gravity from the project settings to be synced with RigidBody nodes.
 var gravity = ProjectSettings.get_setting("physics/3d/default_gravity")
 # New code added to make mouse control camera 
@@ -15,11 +26,13 @@ func _unhandled_input(event):
 		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	elif event.is_action_pressed("ui_cancel"):
 		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+		pauseMenu.visible = !pauseMenu.visible
 	if Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED:
+		pauseMenu.visible = !pauseMenu.visible
 		if event is InputEventMouseMotion:
-			neck.rotate_y(-event.relative.x * 0.01)
-			camera.rotate_x(-event.relative.y * 0.01)
-			camera.rotation.x = clamp(camera.rotation.x, deg_to_rad(-30), deg_to_rad(60))
+			neck.rotate_y(-event.relative.x * sens)
+			camera.rotate_x(-event.relative.y * sens)
+			camera.rotation.x = clamp(camera.rotation.x, deg_to_rad(-20), deg_to_rad(60))
 
 func _physics_process(delta):
 	# Add the gravity.
